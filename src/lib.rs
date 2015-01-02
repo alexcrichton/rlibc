@@ -33,7 +33,7 @@ extern crate core;
 #[cfg(test)] extern crate std;
 #[cfg(test)] extern crate native;
 
-use core::ptr::RawPtr;
+use core::ptr::PtrExt;
 
 #[no_mangle]
 pub unsafe extern fn memcpy(dest: *mut u8, src: *const u8,
