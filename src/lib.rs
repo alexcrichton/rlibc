@@ -31,7 +31,6 @@ extern crate core;
 
 #[phase(plugin, link)]
 #[cfg(test)] extern crate std;
-#[cfg(test)] extern crate native;
 
 use core::ptr::PtrExt;
 
@@ -91,8 +90,8 @@ pub unsafe extern fn memcmp(s1: *const u8, s2: *const u8, n: uint) -> i32 {
 
 #[cfg(test)]
 mod test {
-    use core::str::StrSlice;
-    use core::slice::{MutableSlice, ImmutableSlice};
+    use core::str::StrExt;
+    use core::slice::SliceExt;
 
     use super::{memcmp, memset, memcpy, memmove};
 
