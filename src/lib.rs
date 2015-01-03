@@ -139,7 +139,7 @@ mod test {
 
     #[test]
     fn memset_array() {
-        let mut buffer = [b'X', .. 100];
+        let mut buffer = [b'X';  100];
         unsafe {
             memset(buffer.as_mut_ptr(), b'#' as i32, buffer.len());
         }
@@ -148,7 +148,7 @@ mod test {
 
     #[test]
     fn memcpy_and_memcmp_arrays() {
-        let (src, mut dst) = ([b'X', .. 100], [b'Y', .. 100]);
+        let (src, mut dst) = ([b'X';  100], [b'Y';  100]);
         unsafe {
             assert!(memcmp(src.as_ptr(), dst.as_ptr(), 100) != 0);
             let _ = memcpy(dst.as_mut_ptr(), src.as_ptr(), 100);
