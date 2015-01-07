@@ -20,7 +20,6 @@
 //! necessary. It is an error to include this library when also linking with
 //! the system libc library.
 
-#![feature(phase)]
 #![no_std]
 
 // This library defines the builtin functions, so it would be a shame for
@@ -29,8 +28,7 @@
 
 extern crate core;
 
-#[phase(plugin, link)]
-#[cfg(test)] extern crate std;
+#[cfg(test)] #[macro_use] extern crate std;
 
 use core::ptr::PtrExt;
 
