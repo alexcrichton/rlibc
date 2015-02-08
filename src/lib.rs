@@ -21,7 +21,7 @@
 //! the system libc library.
 
 #![no_std]
-#![feature(core)]
+#![feature(no_std, core)]
 
 // This library defines the builtin functions, so it would be a shame for
 // LLVM to optimize these function calls to themselves!
