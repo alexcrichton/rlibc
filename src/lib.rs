@@ -31,8 +31,6 @@ extern crate core;
 
 #[cfg(test)] #[macro_use] extern crate std;
 
-use core::ptr::PtrExt;
-
 #[no_mangle]
 pub unsafe extern fn memcpy(dest: *mut u8, src: *const u8,
                             n: usize) -> *mut u8 {
