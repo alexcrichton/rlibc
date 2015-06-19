@@ -22,6 +22,7 @@
 
 #![no_std]
 #![feature(no_std, core)]
+#![cfg_attr(test, feature(core_str_ext, core_slice_ext))]
 
 // This library defines the builtin functions, so it would be a shame for
 // LLVM to optimize these function calls to themselves!
