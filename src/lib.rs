@@ -21,8 +21,6 @@
 //! the system libc library.
 
 #![no_std]
-#![feature(no_std)]
-#![cfg_attr(test, feature(core_str_ext, core_slice_ext))]
 
 // This library defines the builtin functions, so it would be a shame for
 // LLVM to optimize these function calls to themselves!
@@ -86,9 +84,6 @@ pub unsafe extern fn memcmp(s1: *const u8, s2: *const u8, n: usize) -> i32 {
 
 #[cfg(test)]
 mod test {
-    use core::str::StrExt;
-    use core::slice::SliceExt;
-
     use super::{memcmp, memset, memcpy, memmove};
 
     #[test]
