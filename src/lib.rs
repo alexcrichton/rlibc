@@ -26,8 +26,6 @@
 // LLVM to optimize these function calls to themselves!
 #![no_builtins]
 
-#[cfg(test)] #[macro_use] extern crate std;
-
 #[no_mangle]
 pub unsafe extern fn memcpy(dest: *mut u8, src: *const u8,
                             n: usize) -> *mut u8 {
