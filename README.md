@@ -12,7 +12,7 @@ Add this to your `Cargo.toml`:
 ```toml
 [dependencies]
 
-rlibc = "0.1"
+rlibc = "1.0"
 ```
 
 And add this to your crate root:
