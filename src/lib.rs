@@ -26,6 +26,11 @@
 // LLVM to optimize these function calls to themselves!
 #![no_builtins]
 
+// NOTE `linkage = weak` doesn't work for Windows (COFF) or MacOS (MachO). It seems it only works
+// for ELF objects.
+#![cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), feature(linkage))]
+
+#[cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), linkage = "weak")]
 #[no_mangle]
 pub unsafe extern fn memcpy(dest: *mut u8, src: *const u8,
                             n: usize) -> *mut u8 {
@@ -37,6 +42,7 @@ pub unsafe extern fn memcpy(dest: *mut u8, src: *const u8,
     return dest;
 }
 
+#[cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), linkage = "weak")]
 #[no_mangle]
 pub unsafe extern fn memmove(dest: *mut u8, src: *const u8,
                              n: usize) -> *mut u8 {
@@ -56,6 +62,7 @@ pub unsafe extern fn memmove(dest: *mut u8, src: *const u8,
     return dest;
 }
 
+#[cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), linkage = "weak")]
 #[no_mangle]
 pub unsafe extern fn memset(s: *mut u8, c: i32, n: usize) -> *mut u8 {
     let mut i = 0;
@@ -66,6 +73,7 @@ pub unsafe extern fn memset(s: *mut u8, c: i32, n: usize) -> *mut u8 {
     return s;
 }
 
+#[cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), linkage = "weak")]
 #[no_mangle]
 pub unsafe extern fn memcmp(s1: *const u8, s2: *const u8, n: usize) -> i32 {
     let mut i = 0;
