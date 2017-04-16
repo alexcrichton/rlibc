@@ -16,3 +16,9 @@ implicitly insert calls to such functions.
 
 [features]
 weak = []
+default = []
+
+cross-compile = ["rust-libcore"]
+
+[dependencies]
+rust-libcore = {version = "*", optional = true}
