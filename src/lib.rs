@@ -20,6 +20,8 @@
 //! necessary. It is an error to include this library when also linking with
 //! the system libc library.
 
+#![cfg_attr(feature = "nightly", feature(asm))]
+
 #![no_std]
 
 // This library defines the builtin functions, so it would be a shame for
@@ -31,6 +33,7 @@
 #![cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), feature(linkage))]
 
 #[cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), linkage = "weak")]
+#[cfg(not(all(target_arch="x86_64", feature = "nightly")))]
 #[no_mangle]
 pub unsafe extern fn memcpy(dest: *mut u8, src: *const u8,
                             n: usize) -> *mut u8 {
@@ -42,7 +45,24 @@ pub unsafe extern fn memcpy(dest: *mut u8, src: *const u8,
     return dest;
 }
 
+#[cfg(all(target_arch="x86_64", feature = "nightly"))]
+#[no_mangle]
+pub unsafe extern fn memcpy(dest: *mut u8, src: *const u8,
+                            n: usize) -> *mut u8 {
+    let mut _i: usize;
+	let mut _j: usize;
+	let mut _k: usize;
+
+	asm!(
+		"cld; rep movsq; movq $4, %rcx; andq $$7, %rcx; rep movsb\n\t"
+		: "={rcx}"(_i), "={rdx}"(_j), "={rsi}"(_k)
+		: "0"(n/8), "r"(n), "1"(dest), "2"(src) : "memory","cc");
+
+    return dest;
+}
+
 #[cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), linkage = "weak")]
+#[cfg(not(all(target_arch="x86_64", feature = "nightly")))]
 #[no_mangle]
 pub unsafe extern fn memmove(dest: *mut u8, src: *const u8,
                              n: usize) -> *mut u8 {
@@ -63,6 +83,31 @@ pub unsafe extern fn memmove(dest: *mut u8, src: *const u8,
 }
 
 #[cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), linkage = "weak")]
+#[cfg(all(target_arch="x86_64", feature = "nightly"))]
+#[no_mangle]
+pub unsafe extern fn memmove(dest: *mut u8, src: *const u8,
+                             n: usize) -> *mut u8 {
+	let mut _i: usize;
+	let mut _j: usize;
+	let mut _k: usize;
+
+    if src < dest as *const u8 { // copy from end
+		asm!(
+			"std; rep movsq; movq $4, %rcx; andq $$7, %rcx; rep movsb; cld"
+			: "={rcx}"(_i), "={rdx}"(_j), "={rsi}"(_k)
+			: "0"(n/8), "r"(n), "1"(dest.offset(n as isize)), "2"(src.offset(n as isize)) : "memory","cc");
+    } else { // copy from beginning
+		asm!(
+			"cld; rep movsq; movq $4, %rcx; andq $$7, %rcx; rep movsb"
+			: "={rcx}"(_i), "={rdx}"(_j), "={rsi}"(_k)
+			: "0"(n/8), "r"(n), "1"(dest), "2"(src) : "memory","cc");
+    }
+
+    return dest;
+}
+
+#[cfg_attr(all(feature = "weak", not(windows), not(target_os = "macos")), linkage = "weak")]
+#[cfg(not(all(target_arch="x86_64", feature = "nightly")))]
 #[no_mangle]
 pub unsafe extern fn memset(s: *mut u8, c: i32, n: usize) -> *mut u8 {
     let mut i = 0;
@@ -70,6 +115,26 @@ pub unsafe extern fn memset(s: *mut u8, c: i32, n: usize) -> *mut u8 {
         *s.offset(i as isize) = c as u8;
         i += 1;
     }
+    return s;
+}
+
+#[cfg(all(target_arch="x86_64", feature = "nightly"))]
+#[no_mangle]
+pub unsafe extern fn memset(s: *mut u8, c: i32, n: usize) -> *mut u8 {
+	let mut _i: usize;
+	let mut _j: usize;
+
+	if c != 0 {
+		asm!("cld; rep stosb"
+			: "={rcx}"(_i), "={rdi}"(_j)
+			: "rax"(c), "1"(s), "0"(n) : "memory","cc" : "volatile");
+	} else {
+		asm!(
+			"cld; rep stosq; movq $5, %rcx; andq $$7, %rcx; rep stosb\n\t"
+			: "={rcx}"(_i), "={rdi}"(_j)
+			: "rax"(0x00), "1"(s), "0"(n/8), "r"(n): "memory","cc" : "volatile");
+	}
+
     return s;
 }
 
