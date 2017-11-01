@@ -92,11 +92,18 @@ pub unsafe extern fn memmove(dest: *mut u8, src: *const u8,
 	let mut _k: usize;
 
     if src < dest as *const u8 { // copy from end
-		asm!(
-			"std; rep movsq; movq $4, %rcx; andq $$7, %rcx; rep movsb; cld"
-			: "={rcx}"(_i), "={rdx}"(_j), "={rsi}"(_k)
-			: "0"(n/8), "r"(n), "1"(dest.offset(n as isize)), "2"(src.offset(n as isize)) : "memory","cc");
-    } else { // copy from beginning
+		if n >= 8 {
+			asm!(
+				"std; rep movsq; movq $4, %rcx; andq $$7, %rcx; rep movsb; cld"
+				: "={rcx}"(_i), "={rdx}"(_j), "={rsi}"(_k)
+				: "0"(n/8), "r"(n), "1"(dest.offset((n-8) as isize)), "2"(src.offset((n-8) as isize)) : "memory","cc");
+		} else if n > 0 {
+			asm!(
+				"std; rep movsb; cld"
+				: "={rcx}"(_i), "={rdx}"(_j), "={rsi}"(_k)
+				: "0"(n), "1"(dest.offset((n-1) as isize)), "2"(src.offset((n-1) as isize)) : "memory","cc");
+		}
+    } else if n > 0 { // copy from beginning
 		asm!(
 			"cld; rep movsq; movq $4, %rcx; andq $$7, %rcx; rep movsb"
 			: "={rcx}"(_i), "={rdx}"(_j), "={rsi}"(_k)
