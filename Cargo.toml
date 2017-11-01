@@ -16,3 +16,4 @@ implicitly insert calls to such functions.
 
 [features]
 weak = []
+nightly = []
