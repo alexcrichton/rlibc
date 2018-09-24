@@ -1,22 +1,16 @@
 rlibc
 =====
 
-A bare minimum "libc" for Rust crates that do not want to rely on libc itself.
-This crate provides functions which LLVM often lowers intrinsic calls to and
-will be required to link correctly.
+**DEPRECATED**: This crate used to provide a Rust implementation of some `libc`
+functions such as `memcpy` / `memmove` / `memset`, required when developing
+freestanding applications.
 
-## Usage
+The [compiler-builtins] crate now provides optimized versions of these functions
+when enabling the optional `mem` feature. It also provides a lot of other useful
+functions required by bare metal applications. It should be used instead of this one.
 
-Add this to your `Cargo.toml`:
+The old version of this crate is still browsable by looking in [Git's history][old].
+No further development will happen here.
 
-```toml
-[dependencies]
-
-rlibc = "1.0"
-```
-
-And add this to your crate root:
-
-```rust
-extern crate rlibc;
-```
+[compiler-builtins]: https://github.com/rust-lang-nursery/compiler-builtins
+[old]: https://github.com/alexcrichton/rlibc/commit/defb486e765846417a8e73329e8c5196f1dca49a
